@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="39.999" height="39.999" viewBox="0 0 63 63">
+  <defs>
+    <style>
+      .cls-1 {
+        fill-rule: evenodd;
+      }
+    </style>
+  </defs>
+  <path id="عمر_عثمان" data-name="عمر عثمان" class="cls-1" d="M0,0H9V63H0V60H6V3H0V0ZM12,0h3V27h3V21h9v6h3V24h3v3h3V21H57v3H39v3H57v3H12V0Zm6,0H63V63H18V60H60V3H18V0ZM30,15h3v3h3v3H27V18h3V15Zm-9,9v3h3V24H21ZM0,30H3v3H0V30Zm12,3H57v3H39v3H57v3H36V36H27v6H18V36H15V63H12V33Zm9,3v3h3V36H21Z"/>
+</svg>
