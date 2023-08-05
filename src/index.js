@@ -1,6 +1,7 @@
 import ImageManager from './engine/imageManager.js';
 import SoundManager from './engine/soundManager.js';
-import Game, { gameState } from './game.js';
+import Game from './game.js';
+import { GameState } from './enums/enums.js';
 
 export var isMobile = false;
 if (/Mobi/.test(navigator.userAgent)) {
@@ -9,14 +10,10 @@ if (/Mobi/.test(navigator.userAgent)) {
 
 const canvas = document.getElementById("gameScreen");
 
-let ctx = canvas.getContext('2d');
-
 SoundManager.configure();
 ImageManager.configure();
 
-let game = new Game(canvas, ctx);
-Game.WIDTH = canvas.width;
-Game.HEIGHT = canvas.height;
+let game = new Game(canvas);
 SoundManager.play('music');
 
 function gameLoop() {
@@ -24,7 +21,7 @@ function gameLoop() {
     game.update();
     game.draw();
     Game.frames++;
-    if (game.gameState === gameState.RUNNING) {
+    if (game.gameState === GameState.RUNNING) {
         Game.gameFrames++;
     }
     requestAnimationFrame(gameLoop);

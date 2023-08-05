@@ -3,9 +3,10 @@ import Game from "../game.js";
 import { OnOffAction } from "../engine/action.js";
 import { distance } from "../engine/collision.js";
 import { moveToward } from "../movingObject.js";
+import { Collider } from "../enums/enums.js";
 
 export default class HealthObject extends SquareObject {
-    static collider = 'rectangle';
+    static collider = Collider.RECTANGLE;
 
     constructor(object) {
         super();
@@ -46,7 +47,11 @@ export default class HealthObject extends SquareObject {
         
     }
 
-    // add a HealthObject in place of an object
+    /**
+     * Add a HealthObject in place of an object.
+     * 
+     * @param {HealthObject} object 
+     */
     static push(object) {
         
         // don't spawn a health object if the player is at full health

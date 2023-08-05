@@ -1,16 +1,17 @@
 import ImageManager from "../engine/imageManager.js";
 import SoundManager from "../engine/soundManager.js";
 import areColliding, { RectRectColliding, distance } from "../engine/collision.js";
-import Game, { gameState } from "../game.js";
+import Game from "../game.js";
 import HealthBar from "./healthBar.js";
 import SquareObject from "./squareObject.js";
 import InputHandler from "../engine/input.js";
 import { moveToward } from "../movingObject.js";
 import { OnOffAction } from "../engine/action.js";
+import { Collider, DrawType, GameState } from "../enums/enums.js";
 
 // this class is used for any square or circle shaped object
 export default class Player extends SquareObject {
-    static collider = 'rectangle';
+    static collider = Collider.RECTANGLE;
 
     constructor() {
         super();
@@ -21,7 +22,7 @@ export default class Player extends SquareObject {
             x: this.posX,
             y: this.posY
         }
-        
+
         this.length = 35;
 
         this.maxVelocity = {
@@ -55,16 +56,16 @@ export default class Player extends SquareObject {
         this.imgIdx = 0;
 
         // when true => the player doesn't get damaged
-        this.unDamagable = false;
+        this.invincible = false;
 
         // the kill count is going to be multiplied with this number
         this.multiply = 1;
 
-        this.unDamagableAction = new OnOffAction(150,
-            () => { this.unDamagable = true },
-            () => { this.unDamagable = false; this.shown = true }
+        this.invincibleAction = new OnOffAction(150,
+            () => { this.invincible = true },
+            () => { this.invincible = false; this.shown = true }
         );
-        Game.instance.actionManager.onOffActions.push(this.unDamagableAction);
+        Game.instance.actionManager.onOffActions.push(this.invincibleAction);
 
         // when false => the player won't render
         this.shown = true;
@@ -86,7 +87,7 @@ export default class Player extends SquareObject {
 
         // caches the last moving direction
         this.lastMovingTo = { ...this.movingTo };
-        
+
         // inisialize a HealthBar object associated with player
         this.healthBar = new HealthBar(this);
 
@@ -101,9 +102,9 @@ export default class Player extends SquareObject {
     addToRecentKills(value) {
         this.recentKillMeasure += value;
         value *= this.multiply;
-        
+
         this.lastKillTime = Game.gameFrames;
-        
+
         this.recentKills.push({ value, time: Game.gameFrames });
         let counter = 0;
         this.recentKills = this.recentKills.filter(kill => {
@@ -127,8 +128,8 @@ export default class Player extends SquareObject {
     }
 
     set health(newHealth) {
-        // don't decrement health if unDamagable
-        if ((this.unDamagable || this.powerups.mask) && newHealth < this.health) {
+        // don't decrement health if invincible
+        if ((this.invincible || this.powerups.mask) && newHealth < this.health) {
             return;
         }
 
@@ -154,15 +155,17 @@ export default class Player extends SquareObject {
             if (this.kills > Game.bestScore) {
                 Game.bestScore = this.kills;
             }
-            Game.instance.gameState = gameState.GAMEOVER;
+            Game.instance.gameState = GameState.GAMEOVER;
         } else {
             this.health = this.maxHealth; // restore full health
             Game.instance.powerups.disactivateAll(); // disactivate all active powerups
-            this.unDamagableAction.activate(); // start the undamagable action
+            this.invincibleAction.activate(); // start the invincible action
         }
     }
 
-    // called on the begining of a game
+    /**
+     * Called on the begining of a game
+     */
     reset() {
         this.fireCircle.storingEnergy = false;
         this.fireCircle.firing = false;
@@ -172,13 +175,21 @@ export default class Player extends SquareObject {
         this.recentKillMeasure = 1;
     }
 
-    // decrements the health by a value
+    /**
+     * Decrements the health by a value.
+     * 
+     * @param {number} value 
+     */
     takeHit(value) {
         this.health -= value;
         this.gettingDamaged = true;
     }
 
-    // determines whether the player position has changed the current update
+    /**
+     * Determines whether the player position has changed the current update
+     * 
+     * @returns {boolean} true if player is moving, false otherwise.
+     */
     isMoving() {
         return this.movingTo.left || this.movingTo.right || this.movingTo.top || this.movingTo.bottom;
     }
@@ -207,7 +218,11 @@ export default class Player extends SquareObject {
         }
     }
 
-    // converts the movingTo object to one string represeting the moving direction
+    /**
+     * Converts the movingTo object to one string represeting the moving direction.\
+     * 
+     * @returns {string} String representation of moving direction.
+     */
     movingDirection() {
         let direction = '';
         if (this.movingTo.top) {
@@ -256,7 +271,7 @@ export default class Player extends SquareObject {
                 powerup.interact();
             }
         });
-        
+
         // collide with interactable objects (e.g. door)
         Game.instance.interactObjects.forEach(obj => {
             if (areColliding(this, obj)) {
@@ -267,22 +282,22 @@ export default class Player extends SquareObject {
         if (!Game.instance.settings.alwaysFollowCursor) {
             if (!InputHandler.keyDown.mouse) {
                 // handle keyboard input
-                if (InputHandler.key.left) {
+                if (InputHandler.keyDown['ArrowLeft']) {
                     this.destination.x = this.posX - this.maxVelocity.x;
-                } else if (InputHandler.key.right) {
+                } else if (InputHandler.keyDown['ArrowRight']) {
                     this.destination.x = this.posX + this.maxVelocity.x;
                 } else {
                     this.destination.x = this.posX;
                 }
-        
-                if (InputHandler.key.up) {
+
+                if (InputHandler.keyDown['ArrowUp']) {
                     this.destination.y = this.posY - this.maxVelocity.y;
-                } else if (InputHandler.key.bottom) {
+                } else if (InputHandler.keyDown['ArrowDown']) {
                     this.destination.y = this.posY + this.maxVelocity.y;
                 } else {
                     this.destination.y = this.posY;
                 }
-        
+
                 if (this.movingTo.left || this.movingTo.right) {
                     this.lastMovingTo = { ...this.movingTo };
                 }
@@ -372,13 +387,13 @@ export default class Player extends SquareObject {
             }
         }
 
-        if (this.unDamagable) {
+        if (this.invincible) {
             if (Game.frames % 3 === 0) {
                 this.shown = !this.shown;
             }
         }
 
-        let minDeltaTime = Math.min(1000 / (this.recentKillMeasure+1), 150);
+        let minDeltaTime = Math.min(1000 / (this.recentKillMeasure + 1), 150);
         if (Game.gameFrames - this.lastKillTime > minDeltaTime) {
             this.recentKillMeasure = Math.pow(this.recentKillMeasure, 0.9993);
         }
@@ -393,9 +408,9 @@ export default class Player extends SquareObject {
 
         // player
         // if (this.isMoving()) {
-            if (Game.frames % 20 === 0) { // change every 20 frame
-                this.imgIdx = (this.imgIdx + 1) % 2;
-            }
+        if (Game.frames % 20 === 0) { // change every 20 frame
+            this.imgIdx = (this.imgIdx + 1) % 2;
+        }
         // }
 
         let drawTo;
@@ -404,7 +419,7 @@ export default class Player extends SquareObject {
         } else {
             drawTo = this.lastMovingTo;
         }
-        
+
         if (!this.shown)
             return;
 
@@ -412,32 +427,32 @@ export default class Player extends SquareObject {
             if (this.powerups.mask) {
                 Game.ctx.drawImage(ImageManager.get('player_L_mask'), this.left, this.top, this.length, this.length);
             } else {
-                Game.ctx.drawImage(ImageManager.get(`player_L_${this.imgIdx+1}`), this.left, this.top, this.length, this.length);
+                Game.ctx.drawImage(ImageManager.get(`player_L_${this.imgIdx + 1}`), this.left, this.top, this.length, this.length);
             }
-            
+
         } else if (drawTo.right) {
             if (this.powerups.mask) {
                 Game.ctx.drawImage(ImageManager.get('player_R_mask'), this.left, this.top, this.length, this.length);
             } else {
-                Game.ctx.drawImage(ImageManager.get(`player_R_${this.imgIdx+1}`), this.left, this.top, this.length, this.length);
+                Game.ctx.drawImage(ImageManager.get(`player_R_${this.imgIdx + 1}`), this.left, this.top, this.length, this.length);
             }
         } else {
             if (this.powerups.mask) {
                 Game.ctx.drawImage(ImageManager.get('player_L_mask'), this.left, this.top, this.length, this.length);
             } else {
-                Game.ctx.drawImage(ImageManager.get(`player_L_${this.imgIdx+1}`), this.left, this.top, this.length, this.length);
+                Game.ctx.drawImage(ImageManager.get(`player_L_${this.imgIdx + 1}`), this.left, this.top, this.length, this.length);
             }
         }
 
         // do not draw the health bar at level 0
-        if (!this.unDamagable) {
+        if (!this.invincible) {
             this.healthBar.draw();
         }
     }
 }
 
 class FireCircle extends SquareObject {
-    static collider = 'circle';
+    static collider = Collider.CIRCLE;
 
     constructor(obj) {
         super();
@@ -508,31 +523,17 @@ class FireCircle extends SquareObject {
 
     draw() {
         if (this.storingEnergy) {
-            Game.ctx.beginPath();
-            Game.ctx.arc(this.obj.posX, this.obj.posY, (this.obj.radius+10)*this.currentStoredEnergy(), 0, 2 * Math.PI);
-            if (Game.instance.player.powerups.potion) {
-                Game.ctx.fillStyle = 'rgba(95, 255, 65, .4)';
-                Game.ctx.strokeStyle = 'rgba(95, 255, 65, 1.0)';
-            } else {
-                Game.ctx.fillStyle = 'rgba(65, 95, 255, .4)';
-                Game.ctx.strokeStyle = 'rgba(65, 95, 255, 1.0)';
-            }
-            Game.ctx.fill();
-            Game.ctx.stroke();
+            const color = Game.instance.player.powerups.potion ? 'rgba(95, 255, 65, .4)' : 'rgba(65, 95, 255, .4)';
+            const strokeColor = Game.instance.player.powerups.potion ? 'rgba(95, 255, 65, 1.0)' : 'rgba(65, 95, 255, 1.0)';
+            Game.instance.ctxHelper.addCircle(this.obj.posX, this.obj.posY, (this.obj.radius + 10) * this.currentStoredEnergy(), {
+                color, strokeColor, drawType: DrawType.FILL_AND_STROKE
+            });
         }
 
-        if (!this.firing) {
-            return;
+        if (this.firing) {
+            const color = Game.instance.player.powerups.potion ? 'rgba(95, 255, 65, .2)' : 'rgba(65, 95, 255, .2)';
+            Game.instance.ctxHelper.addCircle(this.obj.posX, this.obj.posY, this.radius, { color });
         }
-
-        Game.ctx.beginPath();
-        Game.ctx.arc(this.obj.posX, this.obj.posY, this.radius, 0, 2 * Math.PI);
-        if (Game.instance.player.powerups.potion) {
-            Game.ctx.fillStyle = 'rgba(95, 255, 65, .2)';
-        } else {
-            Game.ctx.fillStyle = 'rgba(65, 95, 255, .2)';
-        }
-        Game.ctx.fill();
     }
 
     get posX() {

@@ -1,32 +1,39 @@
+const map = {
+    boots:            'boots.png',
+    potion:           'potion.png',
+    heart:            'heart.png',
+    speaker:          'speaker.png',
+    muted:            'muted.png',
+    house:            'house.png',
+    warning:          'warning.png',
+    mom:              'mom.png',
+    concrete:         'concrete.jpg',
+    player_L_1:       'player_L_1.png',
+    player_L_2:       'player_L_2.png',
+    player_R_1:       'player_R_1.png',
+    player_R_2:       'player_R_2.png',
+    virus1:           'virus1.svg',
+    virus2:           'virus2.png',
+    virus3:           'virus3.png',
+    arrow_keys:       'arrow_keys.png',
+    space_bar:        'space_bar.png',
+    P_key:            'P_key.png',
+    M_key:            'M_key.png',
+    logo:             'logo.png',
+    mylogo:           'mylogo.svg',
+    mask:             'mask.png',
+    player_L_mask:    'player_L_mask.png',
+    player_R_mask:    'player_R_mask.png'
+};
+
+
 export default class ImageManager {
     static images = {};
 
     static configure() {
-        ImageManager.add('boots',            'boots.png');
-        ImageManager.add('potion',           'potion.png');
-        ImageManager.add('heart',            'heart.png');
-        ImageManager.add('speaker',          'speaker.png');
-        ImageManager.add('muted',            'muted.png');
-        ImageManager.add('house',            'house.png');
-        ImageManager.add('warning',          'warning.png');
-        ImageManager.add('mom',              'mom.png');
-        ImageManager.add('concrete',         'concrete.jpg');
-        ImageManager.add('player_L_1',       'player_L_1.png');
-        ImageManager.add('player_L_2',       'player_L_2.png');
-        ImageManager.add('player_R_1',       'player_R_1.png');
-        ImageManager.add('player_R_2',       'player_R_2.png');
-        ImageManager.add('virus1',           'virus1.svg');
-        ImageManager.add('virus2',           'virus2.png');
-        ImageManager.add('virus3',           'virus3.png');
-        ImageManager.add('arrow_keys',       'arrow_keys.png');
-        ImageManager.add('space_bar',        'space_bar.png');
-        ImageManager.add('P_key',            'P_key.png');
-        ImageManager.add('M_key',            'M_key.png');
-        ImageManager.add('logo',             'logo.png');
-        ImageManager.add('mylogo',           'mylogo.svg');
-        ImageManager.add('mask',             'mask.png');
-        ImageManager.add('player_L_mask',    'player_L_mask.png');
-        ImageManager.add('player_R_mask',    'player_R_mask.png');
+        for (const [key, value] of Object.entries(map)) {
+            ImageManager.add(key, value);
+        }
     }
 
     static get(id) {

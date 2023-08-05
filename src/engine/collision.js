@@ -1,3 +1,5 @@
+import { Collider } from "../enums/enums.js";
+
 /**
  * Takes circle and rectangle objects and checks if they are colliding.
  * @param {object} circleObj The circle object.
@@ -63,20 +65,14 @@ export function distance(x1, y1, x2, y2) {
     return Math.sqrt(a * a + b * b);
 }
 
-export const HIT_AREA = {
-    TOP_BOTTOM: 1,
-    SIDE: 2,
-    CORNER: 3
-};
-
 export default function areColliding(obj1, obj2) {
-    if (obj1.constructor.collider === 'rectangle' && obj2.constructor.collider === 'rectangle') {
+    if (obj1.constructor.collider === Collider.RECTANGLE && obj2.constructor.collider === Collider.RECTANGLE) {
         return RectRectColliding(obj1, obj2);
-    } else if (obj1.constructor.collider === 'circle' && obj2.constructor.collider === 'circle') {
+    } else if (obj1.constructor.collider === Collider.CIRCLE && obj2.constructor.collider === Collider.CIRCLE) {
         return circleCircleColliding(obj1, obj2);
     } else {
-        let circle = obj1.constructor.collider === 'circle' ? obj1 : obj2;
-        let rect = obj1.constructor.collider === 'rectangle' ? obj1 : obj2;
+        let circle = obj1.constructor.collider === Collider.CIRCLE ? obj1 : obj2;
+        let rect = obj1.constructor.collider === Collider.RECTANGLE ? obj1 : obj2;
         return RectCircleColliding(circle, rect);
     }
 }

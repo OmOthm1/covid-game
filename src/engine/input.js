@@ -1,19 +1,11 @@
-import Game, { gameState } from '../game.js';
+import Game from '../game.js';
 import SoundManager from './soundManager.js';
+import { GameState } from '../enums/enums.js';
 
 export default class InputHandler {
-    static key = {
-        left: false,
-        up: false,
-        right: false,
-        bottom: false
-    };
-
-    static keyDown = {
-        space: false,
-        mouse: false
-    };
-
+    static keyDown = {};
+    static keyUpListeners = {};
+    static keyDownListeners = {};
     static clickListeners = {};
 
     static addClickListenter(id, _object, _listener) {
@@ -28,114 +20,28 @@ export default class InputHandler {
         InputHandler.clickListeners[id].active = active;
     };
 
-    constructor () {
-        this.spaceDownStart = 0;
-
+    constructor() {
         document.addEventListener('keydown', (event) => {
-            switch (event.keyCode) {
-                case 32:
-                    var spaceWasDown = InputHandler.keyDown.space;
-                    InputHandler.keyDown.space = true;
-                    break;
+            const listener = InputHandler.keyDownListeners[event.code];
+
+            if (listener) {
+                listener(event);
             }
 
-            switch(Game.instance.gameState) {
-                case gameState.RUNNING:
-                    switch (event.keyCode) {
-                        case 37: // left arrow
-                            InputHandler.key.left = true;
-                            break;
-                        case 38: // up arrow
-                            InputHandler.key.up = true;
-                            break;
-                        case 39: // right arrow
-                            InputHandler.key.right = true;
-                            break;
-                        case 40: // bottom arrow
-                            InputHandler.key.bottom = true;
-                            break;
-                        case 32: // space
-                            if (!spaceWasDown && !InputHandler.keyDown.mouse) {
-                                Game.instance.player.fireCircle.spaceDownStarted();
-                            }
-                            break;
-                    }
-            }
+            InputHandler.keyDown[event.code] = true;
         });
 
         document.addEventListener('keyup', (event) => {
-            switch (event.keyCode) {
-                case 37: // left arrow
-                    InputHandler.key.left = false;
-                    break;
-                case 38: // up arrow
-                    InputHandler.key.up = false;
-                    break;
-                case 39: // right arrow
-                    InputHandler.key.right = false;
-                    break;
-                case 40: // bottom arrow
-                    InputHandler.key.bottom = false;
-                    break;
-                case 77:
-                    SoundManager.toggle('music');
-                    break;
-                case 32:
-                    InputHandler.keyDown.space = false;
-                    break;
+            const listener = InputHandler.keyUpListeners[event.code];
+
+            if (listener) {
+                listener(event);
             }
 
-            switch(Game.instance.gameState) {
-                case gameState.RUNNING:
-                    switch (event.keyCode) {
-                        case 32: // space
-                            Game.instance.player.fireCircle.spaceDownEnded();
-                            if (InputHandler.keyDown.mouse) {
-                                Game.instance.player.fireCircle.spaceDownStarted();
-                            }
-                            break;
-                        case 80: // p
-                            Game.instance.gameState = gameState.PAUSED;
-                            break;
-                    }
-                    break;
-
-                case gameState.MENU:
-                    switch (event.keyCode) {
-                        case 38: // up arrow
-                            Game.instance.menu.renderedButtonList.focusPrev();
-                            break;
-                        
-                        case 40: // bottom arrow
-                            Game.instance.menu.renderedButtonList.focusNext();
-                            break
-
-                        case 32: // space
-                            Game.instance.menu.renderedButtonList.clickFocused();
-                            break;
-                    }
-                    break;
-                
-                case gameState.GAMEOVER:
-                    switch (event.keyCode) {
-                        case 32: // space
-                            Game.instance.gameOver.buttonList.clickFocused();
-                            break;
-                    }
-                    break;
-                
-                case gameState.PAUSED: {
-                    switch (event.keyCode) {
-                        case 80: // p
-                            Game.instance.gameState = gameState.RUNNING;
-                            break;
-                    }
-                }
-                break;
-            }
+            InputHandler.keyDown[event.code] = false;
         });
 
-        Game.ctx.canvas.addEventListener('click', function(evt) {
+        Game.ctx.canvas.addEventListener('click', function (evt) {
             let cursor = InputHandler.cursorPos(evt);
 
             Object.values(InputHandler.clickListeners).forEach(cListener => {
@@ -155,10 +61,10 @@ export default class InputHandler {
         });
 
         const mouseupAction = (evt) => {
-            switch(Game.instance.gameState) {
-                case gameState.RUNNING:
+            switch (Game.instance.gameState) {
+                case GameState.RUNNING:
                     Game.instance.player.fireCircle.spaceDownEnded();
-                    if (InputHandler.keyDown.space) {
+                    if (InputHandler.keyDown['Space']) {
                         Game.instance.player.fireCircle.spaceDownStarted();
                     }
                     break;
@@ -166,25 +72,25 @@ export default class InputHandler {
         };
 
 
-        Game.ctx.canvas.addEventListener('mousedown', function(evt) {
+        Game.ctx.canvas.addEventListener('mousedown', function (evt) {
             Game.instance.player.setDestination(InputHandler.cursorPos(evt));
             InputHandler.keyDown.mouse = true;
-    
-            switch(Game.instance.gameState) {
-                case gameState.RUNNING:
-                    if (!InputHandler.keyDown.space) {
+
+            switch (Game.instance.gameState) {
+                case GameState.RUNNING:
+                    if (!InputHandler.keyDown['Space']) {
                         Game.instance.player.fireCircle.spaceDownStarted();
                     }
                     break;
             }
         });
 
-        Game.ctx.canvas.addEventListener('mouseup', function(evt) {
+        Game.ctx.canvas.addEventListener('mouseup', function (evt) {
             InputHandler.keyDown.mouse = false;
             mouseupAction();
         });
 
-        Game.ctx.canvas.addEventListener('mousemove', function(evt) {
+        Game.ctx.canvas.addEventListener('mousemove', function (evt) {
             if (Game.instance.settings.alwaysFollowCursor) {
                 Game.instance.player.setDestination(InputHandler.cursorPos(evt));
             } else {
@@ -194,18 +100,18 @@ export default class InputHandler {
             }
         });
 
-        Game.ctx.canvas.addEventListener('touchmove', function(evt) {
+        Game.ctx.canvas.addEventListener('touchmove', function (evt) {
             evt.preventDefault();
             Game.instance.player.setDestination(InputHandler.touchPos(evt));
         });
 
-        Game.ctx.canvas.addEventListener('touchstart', function(evt) {
+        Game.ctx.canvas.addEventListener('touchstart', function (evt) {
             // evt.preventDefault();
 
             InputHandler.keyDown.mouse = true;
-    
-            switch(Game.instance.gameState) {
-                case gameState.RUNNING:
+
+            switch (Game.instance.gameState) {
+                case GameState.RUNNING:
                     if (evt.touches.length === 1) {
                         Game.instance.player.fireCircle.spaceDownStarted();
                     }
@@ -215,14 +121,14 @@ export default class InputHandler {
             Game.instance.player.setDestination(InputHandler.touchPos(evt));
         });
 
-        Game.ctx.canvas.addEventListener('touchend', function(evt) {
+        Game.ctx.canvas.addEventListener('touchend', function (evt) {
             // evt.preventDefault();
             if (evt.touches.length === 0) {
                 InputHandler.keyDown.mouse = false;
             }
 
-            switch(Game.instance.gameState) {
-                case gameState.RUNNING:
+            switch (Game.instance.gameState) {
+                case GameState.RUNNING:
                     Game.instance.player.fireCircle.spaceDownEnded();
 
                     if (evt.touches.length > 0) {

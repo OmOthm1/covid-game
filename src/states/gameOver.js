@@ -1,6 +1,7 @@
 import { FONT } from "../engine/preferences.js";
-import Game, { gameState } from "../game.js";
+import Game from "../game.js";
 import { Button, ButtonList } from "./button.js";
+import { GameState, TextAlign } from "../enums/enums.js";
 
 export default class GameOver {
     constructor() {
@@ -9,7 +10,7 @@ export default class GameOver {
 
         this.menuButton = new Button(
             'إلى القائمة',
-            () => { Game.instance.gameState = gameState.MENU }
+            () => { Game.instance.gameState = GameState.MENU }
         );
         // this.backButton.style.focused.bgColor = 'black';
         // this.backButton.style.focused.textColor = 'white';
@@ -30,16 +31,21 @@ export default class GameOver {
     }
 
     draw() {
-        Game.ctx.fillStyle = 'black';
-        Game.ctx.fillRect(0, 0, Game.WIDTH, Game.HEIGHT);
+        const ctxHelper = Game.instance.ctxHelper;
 
-        Game.ctx.font = `48px ${FONT}`;
-        Game.ctx.fillStyle = 'white';
-        Game.ctx.textAlign = 'center';
-        Game.ctx.fillText('انتهت اللعبة', Game.WIDTH / 2 + this.randomX, Game.HEIGHT / 2 + this.randomY);
-        Game.ctx.font = `28px ${FONT}`;
-        Game.ctx.fillText(`نقاطك: ${Game.instance.player.kills} / الأفضل: ${Game.bestScore}`, Game.WIDTH / 2, Game.HEIGHT / 2 + 70);
-        // Game.ctx.fillText(`الأفضل: ${Game.bestScore}`, Game.WIDTH / 2, Game.HEIGHT / 2 + 110);
+        ctxHelper.addRect(0, 0, Game.WIDTH, Game.HEIGHT);
+
+        ctxHelper.addText('انتهت اللعبة', Game.WIDTH / 2 + this.randomX, Game.HEIGHT / 2 + this.randomY, {
+            fontSize: 48,
+            color: 'white',
+            textAlign: TextAlign.CENTER,
+        });
+
+        ctxHelper.addText(`نقاطك: ${Game.instance.player.kills} / الأفضل: ${Game.bestScore}`, Game.WIDTH / 2, Game.HEIGHT / 2 + 70, {
+            fontSize: 28,
+            color: 'white',
+            textAlign: TextAlign.CENTER,
+        });
 
         this.buttonList.draw();
     }

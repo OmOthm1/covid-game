@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,34 +14,72 @@
 
     <link rel="shortcut icon" href="#">
     <title>Covid Game</title>
-    <style>
-    @import url('https://fonts.googleapis.com/css2?family=Changa:wght@500&display=swap');
-        body {
-            margin: 0; padding: 0; background: #000;
-        }
-
-        #gameScreen {
-            /* border: 1px solid black; */
-            max-width: 100%;
-            max-height: 100vh;
-            margin: auto;
-            touch-action: manipulation;
-        }
-
-        .wrapper {
-            display: flex;
-            overflow: hidden;
-            min-width: 300px;
-            
-            /*background-color: black; */
-        }
-       
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <div class="wrapper">
         <canvas id="gameScreen" width="1200px" height="900px"></canvas>
     </div>
+
+    <div id="about-game">
+        <h1>About Game</h1>
+        <p>Welcome to the thrilling world of the "COVID Game"! This exciting browser-based game offers an endless
+            challenge that keeps you engaged as you strive to achieve the highest score possible. With a never-ending
+            difficulty curve, the adrenaline rush never stops!</p>
+
+        <h2>Objective:</h2>
+        <p>Your mission is to survive as long as possible, racking up points by eliminating waves of pesky viruses. As
+            the difficulty increases, so does the excitement!</p>
+
+        <h2>The Viruses:</h2>
+        <ul>
+            <li><strong>Green Virus:</strong> The game starts with this basic virus. It moves slowly, inflicts damage on
+                touch, and has moderate health. when two of them come into contact, they combine into a bigger virus.</li>
+            <li><strong>Exploding Red Virus:</strong> As you progress, the faster and more dangerous Exploding Red Virus
+                appears. When killed, it explodes, damaging nearby enemies, or you if you're too close. It has low
+                health.</li>
+            <li><strong>Big Purple Virus:</strong> Prepare for a challenge as the formidable Big Purple Virus emerges.
+                This massive virus is slow but unleashes little circles that deal damage, and touching it can be
+                hazardous. It boasts an impressive health pool that won't be easy to deplete.</li>
+        </ul>
+
+        <h2>Powerups:</h2>
+        <p>Perform well, and you'll be rewarded! Defeating viruses in rapid succession has a chance to trigger powerups.
+            Collect these to gain a temporary advantage:</p>
+        <ul>
+            <li><strong>Heart:</strong> Grants an extra life to extend your survival.</li>
+            <li><strong>Face Mask:</strong> Temporarily grants invincibility, allowing you to maneuver freely amidst the
+                viruses unharmed.</li>
+            <li><strong>Boots:</strong> Provides a temporary speed boost, enabling you to dodge incoming threats with
+                agility.</li>
+            <li><strong>Potion:</strong> Enhances your strength, allowing you to deal more damage to viruses for a
+                limited time.</li>
+        </ul>
+
+        <h2>Health Objects:</h2>
+        <p>Take down viruses to reveal health objects. The stronger the virus, the bigger the health object it drops.
+            Collect these to increase your health and stay in the game longer!</p>
+
+        <h2>Controls:</h2>
+        <ul>
+            <li>Use the <strong>Arrow Keys</strong> to move your character or hold the <strong>Left Click</strong> to
+                make the player follow your cursor.</li>
+            <li>Press the <strong>Space Bar</strong> for a standard attack, with the attack's size increasing the longer
+                you hold the key.</li>
+            <li>Alternatively, use the <strong>Left Mouse Button</strong> for attack if you prefer a mouse-based control
+                scheme.</li>
+            <li>Hit <strong>P</strong> to pause or unpause the game.</li>
+            <li>To mute or unmute the game, press the <strong>M</strong> key.</li>
+        </ul>
+
+    </div>
+
+    <div id="footer">
+        Developed with love and JavaScript. All rights reserved © Omar Othman.
+    </div>
+
     <script type="module" src="src/index.js"></script>
 </body>
+
 </html>

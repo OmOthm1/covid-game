@@ -3,6 +3,7 @@ import ImageManager from "../engine/imageManager.js";
 import RectangleObject from "../game_objects/rectangleObject.js";
 import Game from "../game.js";
 import SquareObject from "../game_objects/squareObject.js";
+import { Collider } from "../enums/enums.js";
 
 export default class HomeLevel {
     constructor() {
@@ -99,7 +100,7 @@ class TalkDialog {
 }
 
 class Door extends RectangleObject {
-    static collider = 'rectangle';
+    static collider = Collider.RECTANGLE;
 
     constructor() {
         super();

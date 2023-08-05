@@ -9,9 +9,10 @@ import CircleObject from "./squareObject.js";
 import SoundManager from "../engine/soundManager.js";
 import HealthObject from "./healthObject.js";
 import { Powerup } from "./powerup.js";
+import { Collider, TextAlign, TextBaseLine } from "../enums/enums.js";
 
 export default class BasicVirus extends CircleObject {
-    static collider = 'circle';
+    static collider = Collider.CIRCLE;
     static maxRadius = 150;
     static maxHealth = 1000;
 
@@ -24,7 +25,6 @@ export default class BasicVirus extends CircleObject {
         this.health = 100;
         this.value = 1;
         this.merged = false;
-        this.spriteIdx = 0;
         this.damage = 1;
         this.power = 1;
 
@@ -46,38 +46,40 @@ export default class BasicVirus extends CircleObject {
     }
 
     static playPointsAnimation(object) {
+        const player = Game.instance.player;
+
         let action = new UpdatedAction(500,
             function onActivate() {
                 this.obj.posX = object.posX;
                 this.obj.posY = object.posY;
             },
             function onDisactivate() {
-                Game.instance.player.increaseKills(object.value * Game.instance.player.multiply);
+                player.increaseKills(object.value * player.multiply);
             },
             function update() {
                 if (Game.gameFrames < this.start + 20) {
                     return;
                 }
-                
+
                 this.obj.speed *= 1.02;
                 let newX = Game.instance.status.positions.kills.x + Game.instance.status.iconWidth;
                 let newY = Game.instance.status.positions.kills.y + Game.instance.status.iconWidth;
-        
+
                 if (distance(this.obj.posX, this.obj.posY, newX, newY) < 20) {
                     this.disActivate();
                     return;
                 }
-        
+
                 moveToward(this.obj, newX, newY, this.obj.speed);
             },
             function draw() {
-                Game.ctx.font = `16px ${FONT}`;
-                Game.ctx.fillStyle = 'green';
-                Game.ctx.textAlign = 'center';
-                Game.ctx.textBaseline = 'middle';
-                Game.ctx.fillText(`+${object.value * Game.instance.player.multiply}`, this.obj.posX, this.obj.posY);
-        
-            }, {speed: 10}
+                Game.instance.ctxHelper.addText(`+${object.value * player.multiply}`, this.obj.posX, this.obj.posY, {
+                    fontSize: 16,
+                    color: 'green',
+                    textAlign: TextAlign.CENTER,
+                    textBaseline: TextBaseLine.MIDDLE
+                });
+            }, { speed: 10 }
         );
         action.activate();
         Game.instance.actionManager.updatedActions.push(action);
@@ -138,18 +140,18 @@ export default class BasicVirus extends CircleObject {
                         }
                     },
                     function draw() {
-                    }, {enemy: this, goal: Math.sqrt(this.radius*this.radius + enemy.radius*enemy.radius), rate: 2}
+                    }, { enemy: this, goal: Math.sqrt(this.radius * this.radius + enemy.radius * enemy.radius), rate: 2 }
                 );
                 growAction.activate();
                 Game.instance.actionManager.updatedActions.push(growAction);
-                
+
 
                 enemy.merged = true;
                 Game.instance.enemies = Game.instance.enemies.filter(e => !e.merged);
             }
         });
 
-        let newX = Game.instance.player.posX ;
+        let newX = Game.instance.player.posX;
         let newY = Game.instance.player.posY;
 
         let tx = newX - this.posX;
@@ -162,11 +164,8 @@ export default class BasicVirus extends CircleObject {
     }
 
     draw() {
-        // if (Game.frames % 20 === 0) { // change every 20 frame
-        //     this.spriteIdx = (this.spriteIdx + 1) % 2;
-        // }
-        Game.ctx.drawImage(ImageManager.get(`virus1`), this.left-this.length*.1, this.top-this.length*.1, this.length*1.2, this.length*1.2);
-        
+        Game.instance.ctxHelper.addImage('virus1', this.left - this.length * .1, this.top - this.length * .1, this.length * 1.2, this.length * 1.2);
+
         // health bar
         if (this.health < this.maxHealth) {
             this.healthBar.draw();

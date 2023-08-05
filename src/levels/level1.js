@@ -25,14 +25,16 @@ export default class Level1 {
         };
     }
 
-    // called when the number of kills changes
+    /**
+     * called when the number of kills changes.
+     */
     killsChanged() {
         // SPAWN FREQUENCY UPDATE
         // every (spawnInterval) an enemy spawns
         // max is 80, min is 15
         // max reached at 800
-        
-        this.spawnInterval = Math.max(100 - Math.round((100 * (Math.min(Game.instance.player.kills, 1000)/1000))), 20);
+
+        this.spawnInterval = Math.max(100 - Math.round((100 * (Math.min(Game.instance.player.kills, 1000) / 1000))), 20);
 
         // VIRUS TYPES APPEARANCE TIME
         // less than 50 kills => (basic virus)
@@ -44,13 +46,12 @@ export default class Level1 {
             this.percentage.basicVirus = 0.33;
             this.percentage.terrorVirus = 0.66;
         }
-        // TODO: stop spawning enemies if the number of enemies on the screen exeeds a limit.
     }
 
     reset() {
         // reset player positon
-        Game.instance.player.posX = Game.WIDTH/2;
-        Game.instance.player.posY = Game.HEIGHT/2;
+        Game.instance.player.posX = Game.WIDTH / 2;
+        Game.instance.player.posY = Game.HEIGHT / 2;
         BigVirus.clearBullets();
 
         // reset frequency
@@ -89,7 +90,7 @@ export default class Level1 {
             },
             function draw() {
                 Game.ctx.drawImage(ImageManager.get('warning'), this.obj.enemy.left + this.obj.randomX, this.obj.enemy.top, 5, 20);
-            }, {enemy: virus, randomX: 0}  
+            }, { enemy: virus, randomX: 0 }
         );
         spawnAction.activate();
         Game.instance.actionManager.updatedActions.push(spawnAction);

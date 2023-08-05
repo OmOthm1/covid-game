@@ -3,6 +3,7 @@ import RectangleObject from "../game_objects/rectangleObject.js";
 import InputHandler from "../engine/input.js";
 import Game from "../game.js";
 import { FONT } from "../engine/preferences.js";
+import { TextAlign, TextBaseLine } from "../enums/enums.js";
 
 export class ButtonList {
     constructor() {
@@ -34,7 +35,7 @@ export class ButtonList {
     }
 
     focusNext() {
-        this.focusedIdx = (this.focusedIdx+1) % this.buttons.length;
+        this.focusedIdx = (this.focusedIdx + 1) % this.buttons.length;
     }
 
     focusPrev() {
@@ -67,7 +68,7 @@ export class Button extends RectangleObject {
 
     constructor(text, action) {
         super();
-        
+
         this.style = {
             unfocused: {
                 'width': 300,
@@ -119,10 +120,6 @@ export class Button extends RectangleObject {
 
     getRule(rule) {
         if (this.currentStyle[rule] !== undefined) {
-            // if (this.focused && rule === 'bgColor') {
-            //     console.log(this.currentStyle[rule])
-            // }
-
             return this.currentStyle[rule];
         } else {
             return this.style.unfocused[rule];
@@ -131,15 +128,15 @@ export class Button extends RectangleObject {
 
     draw() {
         // BG
-        Game.ctx.fillStyle = this.getRule('bgColor');
-        Game.ctx.fillRect(this.left, this.top, this.width, this.height);
+        Game.instance.ctxHelper.addRect(this.left, this.top, this.width, this.height, { color: this.getRule('bgColor') });
 
         // text
-        Game.ctx.font = `${this.getRule('fontSize')}px ${FONT}`;
-        Game.ctx.fillStyle = this.getRule('textColor');
-        Game.ctx.textAlign = 'center';
-        Game.ctx.textBaseline = 'middle';
-        Game.ctx.fillText(this.text, this.posX, this.posY);
+        Game.instance.ctxHelper.addText(this.text, this.posX, this.posY, {
+            fontSize: this.getRule('fontSize'),
+            color: this.getRule('textColor'),
+            textAlign: TextAlign.CENTER,
+            textBaseline: TextBaseLine.MIDDLE
+        });
 
         this.lastRenderFrame = Game.frames;
     }

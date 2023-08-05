@@ -3,15 +3,15 @@ import { distance, RectCircleColliding } from "../engine/collision.js";
 import { moveToward } from "../movingObject.js";
 import SquareObject from "./squareObject.js";
 import { UpdatedAction } from "../engine/action.js";
-import ImageManager from "../engine/imageManager.js";
 import HealthBar from "./healthBar.js";
 import BasicEnemy from "./basicVirus.js";
 import SoundManager from "../engine/soundManager.js";
 import HealthObject from "./healthObject.js";
 import { Powerup } from "./powerup.js";
+import { Collider } from "../enums/enums.js";
 
 export default class TerrorVirus extends SquareObject {
-    static collider = 'circle';
+    static collider = Collider.CIRCLE;
 
     constructor() {
         super();
@@ -70,10 +70,9 @@ export default class TerrorVirus extends SquareObject {
                 this.obj.rate *= 1.1;
             },
             function draw() {
-                Game.ctx.beginPath();
-                Game.ctx.arc(this.obj.posX, this.obj.posY, this.obj.radius, 0, 2 * Math.PI);
-                Game.ctx.fillStyle = "rgba(106, 55, 55, .4)";
-                Game.ctx.fill();
+                Game.instance.ctxHelper.addCircle(this.obj.posX, this.obj.posY, this.obj.radius, {
+                    color: "rgba(106, 55, 55, .4)"
+                });
             },
             {posX: this.posX, posY: this.posY, radius: 1, rate: 2}
         );
@@ -102,7 +101,8 @@ export default class TerrorVirus extends SquareObject {
     }
 
     draw() {
-        Game.ctx.drawImage(ImageManager.get('virus2'), this.left, this.top, this.width, this.height);
+        Game.instance.ctxHelper.addImage('virus2', this.left, this.top, this.width, this.height);
+
         if (this.health < this.maxHealth) {
             this.healthBar.draw();
         }

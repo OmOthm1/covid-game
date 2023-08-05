@@ -7,9 +7,10 @@ import { moveToward } from "../movingObject.js";
 import SoundManager from "../engine/soundManager.js";
 import ImageManager from "../engine/imageManager.js";
 import { Powerup } from "./powerup.js";
+import { Collider } from "../enums/enums.js";
 
 export default class BigVirus extends SquareObject {
-    static collider = 'circle';
+    static collider = Collider.CIRCLE;
 
     constructor() {
         super();
@@ -83,7 +84,7 @@ export default class BigVirus extends SquareObject {
 }
 
 class Bullet extends SquareObject {
-    static collider = 'circle';
+    static collider = Collider.CIRCLE;
 
     constructor(object) {
         super();
@@ -126,9 +127,6 @@ class Bullet extends SquareObject {
     }
 
     draw() {
-        Game.ctx.beginPath();
-        Game.ctx.arc(this.posX, this.posY, this.radius, 0, 2 * Math.PI);
-        Game.ctx.fillStyle = 'purple';
-        Game.ctx.fill();
+        Game.instance.ctxHelper.addCircle(this.posX, this.posY, this.radius, {color: 'purple'});
     }
 }

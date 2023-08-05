@@ -5,9 +5,10 @@ import { distance } from "../engine/collision.js";
 import Game from "../game.js";
 import { moveToward } from "../movingObject.js";
 import SquareObject from "./squareObject.js";
+import { Collider } from "../enums/enums.js";
 
 export class Powerup extends SquareObject {
-    static collider = 'rectangle';
+    static collider = Collider.RECTANGLE;
 
     // sum of chances must be 1
     static types = {
