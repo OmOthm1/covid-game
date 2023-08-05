@@ -45,7 +45,7 @@ export default class MenuScreen {
         this.mylogo.length = 52;
         this.mylogo.right = Game.WIDTH-15;
         this.mylogo.bottom = Game.HEIGHT-15;
-        InputHandler.addClickListenter('mylogo', this.mylogo, () => { window.open('https://www.facebook.com/Omar.Othman.D', '_blank'); });
+        InputHandler.addClickListenter('mylogo', this.mylogo, () => { window.open('https://www.linkedin.com/in/omothm1', '_blank'); });
         InputHandler.clickListenerSetActive('mylogo', true);
 
     }
