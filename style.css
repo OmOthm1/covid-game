@@ -13,14 +13,13 @@ body {
     max-height: 100vh;
     margin: auto;
     touch-action: manipulation;
+    user-select: none;
 }
 
 .wrapper {
     display: flex;
     overflow: hidden;
     min-width: 300px;
-    
-    /*background-color: black; */
 }
 
 #about-game {

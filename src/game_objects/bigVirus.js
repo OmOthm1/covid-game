@@ -1,15 +1,10 @@
 import SquareObject from "./squareObject.js";
 import Game from "../game.js";
-import HealthBar from "./healthBar.js";
-import BasicVirus from "./basicVirus.js";
-import HealthObject from "./healthObject.js";
 import { moveToward } from "../movingObject.js";
-import SoundManager from "../engine/soundManager.js";
-import ImageManager from "../engine/imageManager.js";
-import { Powerup } from "./powerup.js";
 import { Collider } from "../enums/enums.js";
+import Virus from "./virus.js";
 
-export default class BigVirus extends SquareObject {
+export default class BigVirus extends Virus {
     static collider = Collider.CIRCLE;
 
     constructor() {
@@ -19,25 +14,13 @@ export default class BigVirus extends SquareObject {
         this.length = 30;
         this.speed = 2;
         this.power = 2; // this value is decremented from the player when he touches the big viurs
-        this.healthBar = new HealthBar(this);
         this.value = 4;
+        this.deathSound = 'squash3';
+        this.image = 'virus3';
     }
 
     shoot() {
         Game.instance.interactObjects.push(new Bullet(this));
-    }
-
-    die() {
-        Game.instance.enemies = Game.instance.enemies.filter(e => e !== this);
-        SoundManager.play('squash3');
-        BasicVirus.playPointsAnimation(this);
-
-        let result = Game.instance.player.addToRecentKills(this.value);
-        if (result) {
-            Game.instance.powerups.array.push(new Powerup())
-        } else {
-            HealthObject.push(this);
-        }
     }
 
     interact() {
@@ -68,13 +51,6 @@ export default class BigVirus extends SquareObject {
             if (Game.gameFrames % 50 === 0) {
                 this.shoot();
             }    
-        }
-    }
-
-    draw() {
-        Game.ctx.drawImage(ImageManager.get(`virus3`), this.left-this.length*.1, this.top-this.length*.1, this.length*1.2, this.length*1.2);
-        if (this.health < this.maxHealth) {
-            this.healthBar.draw();
         }
     }
 

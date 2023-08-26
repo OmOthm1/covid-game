@@ -1,17 +1,11 @@
-import ImageManager from "../engine/imageManager.js";
 import { distance, circleCircleColliding } from "../engine/collision.js";
 import { UpdatedAction } from "../engine/action.js";
-import { FONT } from "../engine/preferences.js";
-import HealthBar from "./healthBar.js";
 import Game from "../game.js";
 import { moveToward } from "../movingObject.js";
-import CircleObject from "./squareObject.js";
-import SoundManager from "../engine/soundManager.js";
-import HealthObject from "./healthObject.js";
-import { Powerup } from "./powerup.js";
 import { Collider, TextAlign, TextBaseLine } from "../enums/enums.js";
+import Virus from "./virus.js";
 
-export default class BasicVirus extends CircleObject {
+export default class BasicVirus extends Virus {
     static collider = Collider.CIRCLE;
     static maxRadius = 150;
     static maxHealth = 1000;
@@ -24,65 +18,16 @@ export default class BasicVirus extends CircleObject {
         this.maxHealth = 100;
         this.health = 100;
         this.value = 1;
-        this.merged = false;
         this.damage = 1;
         this.power = 1;
+        this.image = 'virus1';
+        this.deathSound = 'squash2';
 
-        this.healthBar = new HealthBar(this);
-        this.healthBar.fgColor = 'red';
+        this.merged = false;
     }
 
     die() {
-        Game.instance.enemies = Game.instance.enemies.filter(e => e !== this);
-        SoundManager.play('squash2');
-        BasicVirus.playPointsAnimation(this);
-
-        let result = Game.instance.player.addToRecentKills(this.value);
-        if (result) {
-            Game.instance.powerups.array.push(new Powerup())
-        } else {
-            HealthObject.push(this);
-        }
-    }
-
-    static playPointsAnimation(object) {
-        const player = Game.instance.player;
-
-        let action = new UpdatedAction(500,
-            function onActivate() {
-                this.obj.posX = object.posX;
-                this.obj.posY = object.posY;
-            },
-            function onDisactivate() {
-                player.increaseKills(object.value * player.multiply);
-            },
-            function update() {
-                if (Game.gameFrames < this.start + 20) {
-                    return;
-                }
-
-                this.obj.speed *= 1.02;
-                let newX = Game.instance.status.positions.kills.x + Game.instance.status.iconWidth;
-                let newY = Game.instance.status.positions.kills.y + Game.instance.status.iconWidth;
-
-                if (distance(this.obj.posX, this.obj.posY, newX, newY) < 20) {
-                    this.disActivate();
-                    return;
-                }
-
-                moveToward(this.obj, newX, newY, this.obj.speed);
-            },
-            function draw() {
-                Game.instance.ctxHelper.addText(`+${object.value * player.multiply}`, this.obj.posX, this.obj.posY, {
-                    fontSize: 16,
-                    color: 'green',
-                    textAlign: TextAlign.CENTER,
-                    textBaseline: TextBaseLine.MIDDLE
-                });
-            }, { speed: 10 }
-        );
-        action.activate();
-        Game.instance.actionManager.updatedActions.push(action);
+        Game.instance.onVirusKill(this);
     }
 
     takeHit(value) {
@@ -163,12 +108,4 @@ export default class BasicVirus extends CircleObject {
         }
     }
 
-    draw() {
-        Game.instance.ctxHelper.addImage('virus1', this.left - this.length * .1, this.top - this.length * .1, this.length * 1.2, this.length * 1.2);
-
-        // health bar
-        if (this.health < this.maxHealth) {
-            this.healthBar.draw();
-        }
-    }
 }

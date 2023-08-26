@@ -1,7 +1,7 @@
 import InputHandler from './engine/input.js';
 import Player from './game_objects/player.js';
 import Menu from './states/menu/menu.js';
-import Powerups from './game_objects/powerup.js';
+import Powerups, { Powerup } from './game_objects/powerup.js';
 import Status from './status.js';
 import GameOver from './states/gameOver.js';
 import PauseScreen from './states/pauseScreen.js';
@@ -10,7 +10,9 @@ import ActionManager from './engine/action.js';
 import Settings from './engine/settings.js';
 import { GameState } from './enums/enums.js';
 import { CtxHelper } from './engine/ctxHelper.js';
-import HomeLevel from './levels/homeLevel.js';
+import HealthObject from './game_objects/healthObject.js';
+import SoundManager from './engine/soundManager.js';
+import Virus from './game_objects/virus.js';
 
 
 export default class Game {
@@ -226,6 +228,25 @@ export default class Game {
                 Game.instance.menu.renderedButtonList.focusPrev();
             }
         };
+    }
+
+    spawnPowerup() {
+        this.powerups.array.push(new Powerup());
+    }
+
+    onVirusKill(virus) {
+        this.enemies = this.enemies.filter(e => e !== virus);
+        SoundManager.play(virus.deathSound);
+        Virus.playPointsAnimation(virus);
+
+        let result = this.player.addToRecentKills(virus.value);
+
+        if (result) {
+            this.spawnPowerup();
+        } else {
+            HealthObject.push(virus);
+        }
+
     }
 
     get levelInstance() {

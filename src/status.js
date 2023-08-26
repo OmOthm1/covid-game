@@ -70,7 +70,7 @@ export default class Status {
         game.ctxHelper.addImage('boots', this.positions.boots.x, this.positions.boots.y, this.iconWidth, this.iconWidth, { opacity: bootsOpacity });
 
         // potoin image
-        const potionOpacity = game.player.powerups.boots ? highOpacity : lowOpacity;
+        const potionOpacity = game.player.powerups.potion ? highOpacity : lowOpacity;
         game.ctxHelper.addImage('potion', this.positions.potion.x, this.positions.potion.y, this.iconWidth, this.iconWidth, { opacity: potionOpacity });
 
         // kills

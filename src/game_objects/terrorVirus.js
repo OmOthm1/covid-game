@@ -1,31 +1,25 @@
 import Game from "../game.js";
 import { distance, RectCircleColliding } from "../engine/collision.js";
 import { moveToward } from "../movingObject.js";
-import SquareObject from "./squareObject.js";
 import { UpdatedAction } from "../engine/action.js";
-import HealthBar from "./healthBar.js";
-import BasicEnemy from "./basicVirus.js";
-import SoundManager from "../engine/soundManager.js";
-import HealthObject from "./healthObject.js";
-import { Powerup } from "./powerup.js";
 import { Collider } from "../enums/enums.js";
+import Virus from "./virus.js";
 
-export default class TerrorVirus extends SquareObject {
+export default class TerrorVirus extends Virus {
     static collider = Collider.CIRCLE;
 
     constructor() {
         super();
         this.length = 20;
-        this.posX = 100;
-        this.posY = 100;
         this.power = 5;
         this.speed = 6;
         this.maxHealth = 50;
         this.health = 50;
-        this.explodeRadius = 150;
         this.value = 2;
-
-        this.healthBar = new HealthBar(this);
+        this.deathSound = 'squash1';
+        this.image = 'virus2';
+        
+        this.explodeRadius = 150;
     }
 
     takeHit(value) {
@@ -42,10 +36,6 @@ export default class TerrorVirus extends SquareObject {
             top: Game.instance.player.top,
             length: Game.instance.player.length
         };
-
-        Game.instance.enemies = Game.instance.enemies.filter(e => e !== this); // despawn
-        BasicEnemy.playPointsAnimation(this);
-        SoundManager.play('squash1');
 
         let that = this;
         let action = new UpdatedAction(500,
@@ -78,13 +68,7 @@ export default class TerrorVirus extends SquareObject {
         );
         action.activate();
         Game.instance.actionManager.updatedActions.push(action);
-
-        let result = Game.instance.player.addToRecentKills(this.value);
-        if (result) {
-            Game.instance.powerups.array.push(new Powerup())
-        } else {
-            HealthObject.push(this);
-        }
+        Game.instance.onVirusKill(this);
     }
 
     interact() {
@@ -97,14 +81,6 @@ export default class TerrorVirus extends SquareObject {
 
         if (distance(this.posX, this.posY, newX, newY) + this.radius < 300) {
             moveToward(this, newX, newY, this.speed);
-        }
-    }
-
-    draw() {
-        Game.instance.ctxHelper.addImage('virus2', this.left, this.top, this.width, this.height);
-
-        if (this.health < this.maxHealth) {
-            this.healthBar.draw();
         }
     }
 }

@@ -7,7 +7,7 @@ import BigVirus from '../game_objects/bigVirus.js';
 
 export default class Level1 {
     constructor() {
-        this.spawnInterval = 100;
+        this.virusSpawnInterval = 100;
 
         this.hardObjects = [];
         this.interactObjects = [];
@@ -34,7 +34,7 @@ export default class Level1 {
         // max is 80, min is 15
         // max reached at 800
 
-        this.spawnInterval = Math.max(100 - Math.round((100 * (Math.min(Game.instance.player.kills, 1000) / 1000))), 20);
+        this.virusSpawnInterval = Math.max(100 - Math.round((100 * (Math.min(Game.instance.player.kills, 1000) / 1000))), 20);
 
         // VIRUS TYPES APPEARANCE TIME
         // less than 50 kills => (basic virus)
@@ -55,7 +55,7 @@ export default class Level1 {
         BigVirus.clearBullets();
 
         // reset frequency
-        this.spawnInterval = 100;
+        this.virusSpawnInterval = 100;
         this.percentage.basicVirus = 1.0;
         this.percentage.terrorVirus = 1.0;
     }
@@ -97,8 +97,13 @@ export default class Level1 {
     }
 
     update() {
-        if (Game.gameFrames % this.spawnInterval === 0) {
+        if (Game.gameFrames % this.virusSpawnInterval === 0) {
             this.spawnEnemy();
+        }
+
+        const powerUpSpawnInterval = 500;
+        if (Game.frames % powerUpSpawnInterval === 0 && Math.random() < .20) {
+            Game.instance.spawnPowerup();
         }
     }
 
