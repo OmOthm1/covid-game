@@ -11,7 +11,7 @@ export default class BigVirus extends Virus {
         super();
         this.maxHealth = 250;
         this.health = this.maxHealth;
-        this.length = 30;
+        this.length = 36;
         this.speed = 2;
         this.power = 2; // this value is decremented from the player when he touches the big viurs
         this.value = 4;

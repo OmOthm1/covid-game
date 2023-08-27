@@ -13,7 +13,7 @@ export default class BasicVirus extends Virus {
     constructor() {
         super();
 
-        this.radius = 10;
+        this.radius = 12;
         this.speed = 4;
         this.maxHealth = 100;
         this.health = 100;

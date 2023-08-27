@@ -1,6 +1,32 @@
 import Game from "../game.js";
 
-export class OnOffAction {
+class Action {
+    /**@type {boolean} */
+    active;
+
+    /**
+     * Duration for action completion (in frames).
+     * @type {number}
+     */
+    time;
+
+    /**
+     * Called when the action is activated.
+     * @type {callback}
+     */
+    onActivate;
+
+    /**
+     * Called when the action is disactivated (time is done).
+     * @type {callback}
+     */
+    onDisactivate;
+
+    /**
+     * Object to do the action on.
+     */
+    obj;
+
     constructor(time, onActivate, onDisactivate, obj) {
         this.active = false;
         this.time = time;
@@ -21,26 +47,17 @@ export class OnOffAction {
     }
 }
 
-export class UpdatedAction {
+export class OnOffAction extends Action {
+    constructor(time, onActivate, onDisactivate, obj) {
+        super(time, onActivate, onDisactivate, obj);
+    }
+}
+
+export class UpdatedAction extends Action {
     constructor(time, onActivate, onDisactivate, update, draw, obj) {
-        this.active = false;
-        this.time = time;
-        this.onActivate = onActivate;
-        this.onDisactivate = onDisactivate;
+        super(time, onActivate, onDisactivate, obj);
         this.update = update;
         this.draw = draw;
-        this.obj = obj;
-    }
-
-    activate() {
-        this.active = true;
-        this.start = Game.gameFrames;
-        this.onActivate();
-    }
-
-    disActivate() {
-        this.active = false;
-        this.onDisactivate();
     }
 }
 
@@ -49,6 +66,8 @@ export default class ActionManager {
         this.updatedActions = [];
         this.onOffActions = [];
         this.staticUpdatedActions = [];
+
+        this.actions = [];
     }
 
     clearAll() {
